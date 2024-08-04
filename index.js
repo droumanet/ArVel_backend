@@ -166,9 +166,9 @@ let everyMinut = schedule.scheduleJob('*/1 * * * *', () => {
     // subModuleList = velbuslib.resume()
     let subList = velbuslib.fullSubModuleList()
     if (subList != undefined) {
-        console.log("LISTE", subList)
+        console.log("LISTE EXISTANTE")
         if (subList.size > 0) {
-            console.log("THERE ARE SOME MODULES")
+            console.log("THERE ARE ",subList.size," MODULES")
             let ll
             let eventDate=""
             subList.forEach((v, k) => {

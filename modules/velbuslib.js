@@ -69,6 +69,7 @@ function lenSubModuleList() {
 }
 
 
+// #region FRAME functions
 /** ---------------------------------------------------------------------------------------------
  * This function split messages that are in the same frame. Example 0F...msg1...04 / 0F...msg2...04
  * @param {*} data RAW frame that could contains multiple messages
@@ -169,18 +170,22 @@ function resume() {
 	return moduleList;
 }
 
+/**
+ * This function try to reassemble each frame to create a full name for submodule
+ * @param {*} element Frame received (should be F0, F1 or F2 for name)
+ */
 function checkName(element) {
-	// console.log("-------------- NAME " + element[4].toString(16) + " ------------------")
 	let key = element[2] + "-" + Bin2Part(element[5])
 	let fctVelbus = element[4]
 	let myModule = VMBNameStatus.get(key)
 	// console.log("🔁 VMBNameStatus.get(" + key + ")=", myModule) // WIP
 	let max = 6
+	if (fctVelbus == 0xF2) max = 4
+
 	if (myModule == undefined) {
 		VMBNameStatus.set(key, { "address": element[2], "name": "", "n1": "", "n2": "", "n3": "", "flag": 0 })
 		myModule = VMBNameStatus.get(key)
 	}
-	if (fctVelbus == 0xF2) max = 4
 
 	let n = new Array()
 	let idx = fctVelbus - 0xF0
@@ -192,7 +197,8 @@ function checkName(element) {
 	n[2] = myModule.n3
 	n[idx] = ""
 
-	// console.log("🔁 NAME", key, element[5], "Idx:", idx, "["+n[0]+"]["+n[1]+"]["+n[2]+"]")
+	//FIXME subModuleList without name
+	// Filling name char by char (n1 et n2 => max=6, n3 => max=4 as 15 char)
 	for (let t = 0; t < max; t++) {
 		if (element[6 + t] != 0xFF) {
 			n[idx] = n[idx] + String.fromCharCode(element[6 + t])
@@ -201,11 +207,10 @@ function checkName(element) {
 
 	// in case name is complete (flag = 100 | 010 | 001)
 	if ((f | flag) == 0b111) {
-		let m = moduleList.get(key)
+		let m = subModuleList.get(key)
 		if (m != undefined) {
 			m.name = n[0] + n[1] + n[2]
-			moduleList.set(key, m)
-			console.log("ARVEL - VELBUS submodule " + key + " is named " + m.name)
+			console.log("🏷️ ARVEL - VELBUS submodule " + key + " is named " + m.name)
 		}
 	}
 	VMBNameStatus.set(key, { "address": element[2], "name": n[0] + n[1] + n[2], "n1": n[0], "n2": n[1], "n3": n[2], "flag": flag | f })
@@ -253,7 +258,13 @@ function checkModule(VMBmessage) {
 	}
 
 }
-// debug function
+
+
+/** ----------------------------------------------------------------------------------------------
+ * Show a detailled information on a message
+ * @param {*} element 
+ * @returns texte contening information like temperature, status, energy, etc.
+ * ---------------------------------------------------------------------------------------------*/
 function analyze2Texte(element) {
 	let fctVelbus = Number(element[4])
 	let adrVelbus = element[2]
@@ -319,26 +330,33 @@ function analyze2Texte(element) {
 // =                                          functions VMB ALL                                               =
 // ============================================================================================================
 
-/**
+/** --------------------------------------------------------------------------------------------------
  * This method write a Velbus frame to the TCP connexion
  * @param {Buffer} req RAW format Velbus frame
  * @param {*} res not used
- */
+ * -------------------------------------------------------------------------------------------------*/
 async function VMBWrite(req) {
 	console.log('\x1b[32m', "VelbusLib writing", '\x1b[0m', toHexa(req).join())
 	VelbusConnexion.write(req);
 	await sleep(10)
 }
 
-// Synchronize Velbus with host. If day/hour/minute are wrong (ie. 99) then use system date
+
+/** --------------------------------------------------------------------------------------------------
+ * Synchronize Velbus with host. If day/hour/minute are wrong (ie. 99) then use system date
+ * @param {*} day if any field is wrong, function will use system date
+ * @param {*} hour 
+ * @param {*} minute 
+ * -------------------------------------------------------------------------------------------------*/
 function VMBSetTime(day, hour, minute) {
 	VMBWrite(FrameTransmitTime(day, hour, minute))
 }
 
-/**
+
+/** --------------------------------------------------------------------------------------------------
  * Send a scan request for one or all module
  * @param {*} adrModule could be 0 (all) or any address (1-255)
- */
+ * -------------------------------------------------------------------------------------------------*/
 function VMBscanAll(adrModule = 0) {
 	if (adrModule == 0) {
 		for (let t = 0; t < 256; t++) {
@@ -350,16 +368,16 @@ function VMBscanAll(adrModule = 0) {
 
 }
 
+// #endregion
 
-
-
-
-// ============================================================================================================
-// =                                 functions with Listener                                                  =
-// ============================================================================================================
-// Basic calculation function are named by Type/Value/Calculation
-// Listener are named as 'survey'/Type/'Value'
-// Function that return a value are named 'VMBRequest'/Type and read a Map
+// #region LISTENER Functions
+/* ============================================================================================================
+   =                                 functions with Listener                                                  =
+   ============================================================================================================
+   Basic calculation function are named by Type/Value/Calculation
+   Listener are named as 'survey'/Type/'Value'
+   Function that return a value are named 'VMBRequest'/Type and read a Map
+   ===========================================================================================================*/
 
 function EnergyIndexCalculation(msg) {
 	let pulse = (msg.RAW[5] >> 2) * 100
@@ -443,11 +461,18 @@ function surveyTempStatus() {
 			let maxT = TempMaxCalculation(msg.RAW)
 			let key = msg.RAW[2] + "-1"
 			let status = { "current": currentT, "min": minT, "max": maxT, "timestamp": Date.now() }
-			VMBTempStatus.set(key, status)
-			UpdateModule(key, status)
-			if (VMBNameStatus.get(key) == undefined) {
-				VMBWrite(FrameRequestName(msg.RAW[2], 1))
-				moduleList.set(key, new VMBsubmodule(msg.RAW[2], 1, key, "temp", status))
+			// WIP : ajout de renseignements manquants dans les sous-modules
+			// ajout pour gestion avec subModuleList
+			let subModTemp = subModuleList.get(key)
+			if (subModTemp) {
+				subModTemp.status = status
+				if (subModTemp.name == "") {
+					// if it has no name, ask it
+					VMBWrite(FrameRequestName(msg.RAW[2], 1))
+				}
+				if (subModTemp.fct == "") {
+					subModTemp.fct = "temp"
+				}
 			}
 		}
 	})
@@ -477,6 +502,22 @@ function surveyEnergyStatus() {
 			let part = (msg.RAW[5] & 3) + 1
 			let key = addr + "-" + part
 			let status = { "index": rawcounter, "power": power, "timestamp": Date.now() }
+
+			// ajout pour gestion avec subModuleList
+			let subModTemp = subModuleList.get(key)
+			if (subModTemp) {
+				subModTemp.status = status
+				if (subModTemp.name == "") {
+					console.log("MODULE Without name : ", key, subModTemp.name) // TODO Remove this
+					// if it has no name, ask it
+					VMBWrite(FrameRequestName(msg.RAW[2], 1))
+				}
+				if (subModTemp.fct == "") {
+					subModTemp.fct = "energy"
+				}
+			}
+			// Fin ajout
+			/*
 			VMBEnergyStatus.set(key, status)
 			UpdateModule(key, status)
 
@@ -485,6 +526,7 @@ function surveyEnergyStatus() {
 				VMBWrite(FrameRequestName(msg.RAW[2], Part2Bin(part)))
 				moduleList.set(key, new VMBsubmodule(addr, part, key, "energy", status))
 			}
+			*/
 		}
 	})
 }
@@ -496,8 +538,10 @@ async function VMBRequestEnergy(adr, part) {
 		VMBWrite(trame);
 		await sleep(200); // VMBEmitter isn't synchronous, need to wait few milliseconds to be sure answer is back
 		// Received answer
-		let result = VMBEnergyStatus.get(adr + "-" + part)
-		if (result != undefined) return result;
+		// let result = VMBEnergyStatus.get(adr + "-" + part)
+		let result = subModuleList.get(adr+"-"+part)
+		// WIP récupérer les valeurs dans subModuleList
+		if (result) return result.status;
 		return { "power": undefined, "index": undefined, "timestamp": Date.now() };
 	} else {
 		// part is 0xF or more : send request on all part of a module
@@ -506,10 +550,10 @@ async function VMBRequestEnergy(adr, part) {
 		VMBWrite(trame);
 
 		await sleep(200);
-		tableModule.push(VMBEnergyStatus.get(adr + "-1"));
-		tableModule.push(VMBEnergyStatus.get(adr + "-2"));
-		tableModule.push(VMBEnergyStatus.get(adr + "-3"));
-		tableModule.push(VMBEnergyStatus.get(adr + "-4"));
+		tableModule.push(subModuleList.get(adr + "-1").status);
+		tableModule.push(subModuleList.get(adr + "-2").status);
+		tableModule.push(subModuleList.get(adr + "-3").status);
+		tableModule.push(subModuleList.get(adr + "-4").status);
 		return tableModule;
 	}
 
@@ -520,7 +564,7 @@ async function VMBRequestEnergy(adr, part) {
 /*function VMBSearchMsg(msg, callBackFct, part = 0xFF) {
 	
 }*/
-
+// #endregion
 
 
 
