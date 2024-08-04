@@ -165,12 +165,13 @@ let everyMinut = schedule.scheduleJob('*/1 * * * *', () => {
     console.log("==== ARVEL CRON 1 minute  ====", d.toISOString(), "====")
     // subModuleList = velbuslib.resume()
     let subList = velbuslib.fullSubModuleList()
-    if (subList != undefined) {
-        console.log("LISTE EXISTANTE")
+    if (subList) {
+        console.log("LIST EXIST")
         if (subList.size > 0) {
             console.log("THERE ARE ",subList.size," MODULES")
             let ll
             let eventDate=""
+            let texte=""
             subList.forEach((v, k) => {
                 
                 /* // planned to have multiples values in v.fct
@@ -186,14 +187,16 @@ let everyMinut = schedule.scheduleJob('*/1 * * * *', () => {
                 }
                 */
                 if (v.fct == "energy") {
+                    texte = v.address+"-"+v.part+" : "+v.name
                     velbuslib.VMBRequestEnergy(v.address, v.part)
-                    .then((msg) => {console.log(msg)})
+                    .then((msg) => {console.log(texte, msg)})
                     ll = new Date(v.status.timestamp)
                     eventDate=ll.getFullYear()+"-"+pad(ll.getMonth()+1)+"-"+pad(ll.getDate())+" "+pad(ll.getHours())+":"+pad(ll.getMinutes())+":00"
                     //eventDate = (new Date(v.status.timestamp)-).toISOString().slice(0, 19).replace('T', ' ')
                     console.log(eventDate, v.id, v.fct, v.status.power, v.status.index, 'w (', v.address,'-' ,v.part,')')
-
-                    writeEnergy([v.address, v.part, eventDate, v.status.index, v.status.power])
+                    if (v.status.power && v.status.index) {
+                        writeEnergy([v.address, v.part, eventDate, v.status.index, v.status.power])
+                    }
                 }
             })
         } else {

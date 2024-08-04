@@ -59,8 +59,6 @@ function getSubModuleList(addresspart) {
 	return subModuleList.get(addresspart)
 }
 function fullSubModuleList() {
-	console.log("subModuleList renvoie de liste complète", subModuleList)
-	// moduleList is ok (contains main modules and description)
 	return subModuleList
 }
 function lenSubModuleList() {
@@ -161,9 +159,9 @@ function Part2Bin(partValue) {
 }
 
 function localModuleName(k) {
-	let myModule = VMBNameStatus.get(k)
-	if (myModule == undefined) return "****"
-	return myModule.name
+	let myModule = subModuleList.get(k)
+	if (myModule) return myModule.name
+	return "****"
 }
 
 function resume() {
@@ -179,23 +177,21 @@ function checkName(element) {
 	let fctVelbus = element[4]
 	let myModule = VMBNameStatus.get(key)
 	// console.log("🔁 VMBNameStatus.get(" + key + ")=", myModule) // WIP
-	let max = 6
+
+	let max = 6		// for 0xF0 and 0xF1 functions
 	if (fctVelbus == 0xF2) max = 4
 
+	// if VMBNameStatus doesn't exist, create one and get it value 
 	if (myModule == undefined) {
 		VMBNameStatus.set(key, { "address": element[2], "name": "", "n1": "", "n2": "", "n3": "", "flag": 0 })
 		myModule = VMBNameStatus.get(key)
 	}
 
-	let n = new Array()
-	let idx = fctVelbus - 0xF0
-	let flag = 2 ** idx
-	let f = myModule.flag
-
-	n[0] = myModule.n1
-	n[1] = myModule.n2
-	n[2] = myModule.n3
-	n[idx] = ""
+	let n = [myModule.n1, myModule.n2, myModule.n3]
+	let idx = fctVelbus - 0xF0	// idx could be 2, 1 or 0
+	let flag = 2 ** idx			// 2^n transformation (bit 1, 2 or 4)
+	let f = myModule.flag		// flag use a OR binary operation with 2⁰, 2¹ and 2²
+	n[idx] = ""					// remove previous value
 
 	//FIXME subModuleList without name
 	// Filling name char by char (n1 et n2 => max=6, n3 => max=4 as 15 char)
@@ -208,9 +204,11 @@ function checkName(element) {
 	// in case name is complete (flag = 100 | 010 | 001)
 	if ((f | flag) == 0b111) {
 		let m = subModuleList.get(key)
-		if (m != undefined) {
-			m.name = n[0] + n[1] + n[2]
-			console.log("🏷️ ARVEL - VELBUS submodule " + key + " is named " + m.name)
+		if (m) {
+			m.name = myModule.name
+			console.log("🏷️ ARVEL - VELBUS submodule " + key + " is named " + subModuleList.get(key).name)
+		} else {
+			console.log("Erreur de lecture du module")
 		}
 	}
 	VMBNameStatus.set(key, { "address": element[2], "name": n[0] + n[1] + n[2], "n1": n[0], "n2": n[1], "n3": n[2], "flag": flag | f })
@@ -244,15 +242,42 @@ function checkModule(VMBmessage) {
 		let key, subModTemp
 		if (fctVelbus == 0xFF) {
 			newModule.modType = typVelbus
-			console.log("CREATE", newModule.modType)
+			console.log("CREATE TYPE:", newModule.modType)
 			newModule.partNumber = VMB.getPartFromCode(newModule.modType)	// Fixed 2024-04-07
 			moduleList.set(adrVelbus, newModule)							// Fixed 2024-04-12
 			// Création des sous-modules
 			for (let i=0; i<newModule.partNumber; i++) {
 				key=adrVelbus+"-"+(i+1)
 				subModTemp = new VMBsubmodule(adrVelbus, i+1, key, "", {})
+				switch (typVelbus) {
+					case 0x01:
+					case 0x16:
+					case 0x17:
+					case 0x18:
+						subModTemp.fct = "button"
+						break
+					case 0x0B:
+						subModTemp.fct = "button"
+						break
+					case 0x02:
+					case 0x08:
+					case 0x1B:
+						subModTemp.fct = "relay"
+						break						
+					case 0x22:
+						if (i<4) { subModTemp.fct = "energy" }
+						else {subModTemp.fct = "button"}
+						break
+					case 0x0e:
+						subModTemp.fct = "temp"
+						break
+					default:
+						break
+				}
+				subModTemp.type = typVelbus
 				setSubModuleList(key, subModTemp)
-				console.log("  |_ CREATE", key)
+				console.log("  |_ CREATE", key, "TYPE:", subModTemp.type, "FUNCTION:",subModTemp.fct)
+				VMBWrite(FrameRequestName(adrVelbus, (i+1)))
 			}
 		}
 	}
@@ -466,7 +491,7 @@ function surveyTempStatus() {
 			let subModTemp = subModuleList.get(key)
 			if (subModTemp) {
 				subModTemp.status = status
-				if (subModTemp.name == "") {
+				if (subModTemp.name == undefined) {
 					// if it has no name, ask it
 					VMBWrite(FrameRequestName(msg.RAW[2], 1))
 				}
@@ -507,14 +532,8 @@ function surveyEnergyStatus() {
 			let subModTemp = subModuleList.get(key)
 			if (subModTemp) {
 				subModTemp.status = status
-				if (subModTemp.name == "") {
-					console.log("MODULE Without name : ", key, subModTemp.name) // TODO Remove this
-					// if it has no name, ask it
-					VMBWrite(FrameRequestName(msg.RAW[2], 1))
-				}
-				if (subModTemp.fct == "") {
-					subModTemp.fct = "energy"
-				}
+			} else {
+				console.log("NON EXISTENT SUBMODULE", key)
 			}
 			// Fin ajout
 			/*
@@ -538,9 +557,7 @@ async function VMBRequestEnergy(adr, part) {
 		VMBWrite(trame);
 		await sleep(200); // VMBEmitter isn't synchronous, need to wait few milliseconds to be sure answer is back
 		// Received answer
-		// let result = VMBEnergyStatus.get(adr + "-" + part)
 		let result = subModuleList.get(adr+"-"+part)
-		// WIP récupérer les valeurs dans subModuleList
 		if (result) return result.status;
 		return { "power": undefined, "index": undefined, "timestamp": Date.now() };
 	} else {
@@ -610,7 +627,7 @@ VelbusConnexion.on('connect', () => {
 
 VelbusConnexion.once('connect', () => {
 	setTimeout(() => {
-		// VMBscanAll()
+		// VMBscanAll() after 1 second
 		console.log("Now scanning all devices on BUS 🔎")
 		VMBscanAll(0)
 	}, 1000)
@@ -624,7 +641,7 @@ VelbusConnexion.on('data', (data) => {
 	Cut(data).forEach(element => {
 		checkModule(element);
 		desc = analyze2Texte(element);
-		console.log("  ➡️",desc)	// use as debug
+		console.log("  📥",desc)	// use as debug
 
 		VMBmessage = { "RAW": element, "Description": desc, "TimeStamp": Date.now(), "Address": element[2], "Function": element[4] }
 
