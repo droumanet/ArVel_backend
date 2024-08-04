@@ -1,0 +1,30 @@
+{
+  "name": "velbusLib",
+  "version": "1.0.0",
+  "description": "test with IO TCP stream coming from Velbus",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+    "@mdi/font": "^6.5.95",
+    "@mdi/svg": "^6.5.95",
+    "@mdi/util": "^0.3.2",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "mysql2": "^2.3.3",
+    "mysql2-promise": "^0.1.4",
+    "net": "^1.0.2",
+    "node-schedule": "^2.0.0",
+    "nodemon": "^2.0.11",
+    "pickle": "^0.2.0",
+    "socket.io": "^4.1.3",
+    "sunrise-sunset-js": "^2.2.1"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "prRoumanet",
+  "license": "ISC"
+}

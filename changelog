@@ -1,0 +1,13 @@
+
+version 0.4 (2022-12-21)
+ + Add graphic for module energy by day
+ 
+version 0.3 (2022-12-03)
+ + Add Energy (VMBmodule) to db
+ 
+version 0.2 (2022-02-21)
+ + Velbus synchronisation time (send frame and frame construction)
+ + cron is working
+
+version 0.1 (2021-)
+ * creation

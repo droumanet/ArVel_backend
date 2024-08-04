@@ -1,0 +1,55 @@
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>264</x><y>180</y><w>170</w><h>230</h></coordinates><panel_attributes>SubModule
+--
+_address : int (FK)_
+_part : int_
+shortName : string
+longName : string
+status : {object}
+room : string
+zone : [array]
+functions : [array]</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>604</x><y>180</y><w>180</w><h>280</h></coordinates><panel_attributes>Module
+--
+_address : int_
+modType : int
+partNumber : int
+powerConsumption : int
+description : string
+location : string
+buildWeek : int
+buildYear : int
+fctTemperature : boolean
+fctRelay : boolean
+fctBlind : boolean
+fctDimmer : boolean
+fctButton : boolean
+fctCounter : boolean
+fctPower : boolean</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>424</x><y>250</y><w>200</w><h>50</h></coordinates><panel_attributes>lt=-&gt;&gt;&gt;&gt;&gt;
+m1=1..8
+m2=1
+&lt; is constitued of</panel_attributes><additional_attributes>10;20;180;20</additional_attributes></element><element><id>Relation</id><coordinates><x>344</x><y>400</y><w>70</w><h>280</h></coordinates><panel_attributes>lt=-
+m1=0..*
+m2=1
+a eu v</panel_attributes><additional_attributes>10;260;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>864</x><y>150</y><w>30</w><h>660</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>10;640;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>914</x><y>180</y><w>120</w><h>110</h></coordinates><panel_attributes>User
+--
+role
+name
+password
+email</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>264</x><y>660</y><w>170</w><h>90</h></coordinates><panel_attributes>HistoricStatus
+--
+_DateDebut : date_
+_DateFin : date_
+Etat : {object}</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>604</x><y>650</y><w>180</w><h>100</h></coordinates><panel_attributes>HistoricBusError
+--
+date : date
+busErrorTX : int
+busErrorRX : int
+busErrorOFF : int</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>684</x><y>450</y><w>50</w><h>220</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=0..*</panel_attributes><additional_attributes>10;10;10;200</additional_attributes></element><element><id>UMLNote</id><coordinates><x>0</x><y>340</y><w>180</w><h>120</h></coordinates><panel_attributes>Zone
+--
+East, West...
+Exterior, Interior
+Ground, 1stFloor....
+Nightroom, Dayroom...
+
+bg=blue</panel_attributes><additional_attributes></additional_attributes></element></diagram>
