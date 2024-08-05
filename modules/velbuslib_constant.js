@@ -6,49 +6,49 @@ const PrioLo = 0xFB;
 
 //#region modules AS Modules (code, name, desc, power (mA, for 15v BUS), partNumber)
 const moduleTypes    = 
-[{code : "0x01", name :  "VMB8PB",    power:[30,30],   desc : "8 simple push buttons module", PartNb : 8},
- {code : "0x02", name :  "VMB1RY",    power: [50,50],  desc : "1 relay (with physical button) module", PartNb : 1},
- {code : "0x03", name :  "VMB1BL",    power: [100,100], desc : "1 blind (with physical button) module", PartNb : 1},
- {code : "0x05", name :  "VMB6IN",    power: [150, 150], desc : "6 inputs module", PartNb : 6},
- {code : "0x07", name :  "VMB1DM",    power: [35],  desc : "1 dimmer (with physical button) module", PartNb : 1},
- {code : "0x08", name :  "VMB4RY",    power: [50,250], desc : "4 relays (with physical buttons) module", PartNb : 4},
- {code : "0x09", name :  "VMB2BL",    power: [200], desc : "2 blind (with physical button) module", PartNb : 2},
- {code : "0x0B", name :  "VMB4PD",    power: [30],  desc : "8 (2x4) push buttons with display module", PartNb : 4},
- {code : "0x0C", name :  "VMB1TS",    power: [10],  desc : "1 temperature sensor module", PartNb : 1},
- {code : "0x0D", name :  "VMB1TH",    power: [0], desc : "-never produced-", PartNb : 1},
- {code : "0x0E", name :  "VMB1TC",    power: [50],  desc : "1 temperature sensor module", PartNb : 1},
- {code : "0x0F", name :  "VMB1LED",   power: [20],  desc : "1 LED controller module", PartNb : 1},
- {code : "0x10", name :  "VMB4RYLD",  power: [0], desc : "4 relays (common power source) module", PartNb : 4},
- {code : "0x11", name :  "VMB4RYNO",  power: [30,250], desc : "4 relays module", PartNb : 4},
- {code : "0x12", name :  "VMB4DC",    power: [100], desc : "4 channels controller (0..10v) module", PartNb : 4},
- {code : "0x14", name :  "VMBDME",    power: [30],  desc : "1 dimmer (electronic transformer load) module", PartNb : 1},
- {code : "0x15", name :  "VMBDMI",    power: [30],  desc : "1 dimmer (inductive load) module", PartNb : 1},
- {code : "0x16", name :  "VMB8PBU",   power: [35],  desc : "8 push buttons (different form factor) module", PartNb : 8},
- {code : "0x17", name :  "VMB6BPN",   power: [0], desc : "6 push buttons (Niko compatible) module", PartNb : 6},
- {code : "0x18", name :  "VMB2PBAN",  power: [20],  desc : "2 push buttons (Niko compatible) module", PartNb : 2},
- {code : "0x18", name :  "VMB2PBN",   power: [20],  desc : "2 push buttons (Niko compatible) module", PartNb : 2},
- {code : "0x1A", name :  "VMB4RF",    power: [0], desc : "4 channels wireless remote module", PartNb : 4},
- {code : "0x1B", name :  "VMB1RYNO",  power: [100], desc : "1 relay module", PartNb : 1},
- {code : "0x1C", name :  "VMB1BLE",   power: [100], desc : "1 blind module", PartNb : 1},
- {code : "0x1D", name :  "VMB2BLE",   power: [200], desc : "2 blind module", PartNb : 2},
- {code : "0x1E", name :  "VMBGP1",    power: [20],  desc : "1 push glass button module", PartNb : 1},
- {code : "0x1F", name :  "VMBGP2",    power: [20],  desc : "2 push glass button module", PartNb : 2},
- {code : "0x20", name :  "VMBGP4",    power: [20],  desc : "4 push glass button module", PartNb : 4},
- {code : "0x22", name :  "VMB7IN",    power: [30,150], desc : "7 inputs with minus up to 4 counters", PartNb : 7 },
- {code : "0x25", name :  "VMBGPTC",   power: [20],  desc : "", PartNb : 1},
- {code : "0x28", name :  "VMBGPOD",   power: [20], desc : "", PartNb : 1},
- {code : "0x29", name :  "VMB1RYNOS", power: [15],  desc : "", PartNb : 1},
- {code : "0x2A", name :  "VMBPIRM",   power: [10],  desc : "Infra Red sensor", PartNb : 1},
- {code : "0x2B", name :  "VMBPIRC",   power: [20],  desc : "Infra Red sensor", PartNb : 1},
- {code : "0x2C", name :  "VMBPIRO",   power: [30],  desc : "Infra Red sensor", PartNb : 1},
- {code : "0x2D", name :  "VMBGP4PIR", power: [25],  desc : "4 push buttons + Infra Red sensor", PartNb : 4},
- {code : "0x2E", name :  "VMB1BLS",   power: [100], desc : "", PartNb : 1},
+[{code : "0x01", name :  "VMB8PB",    power:[30,30],   desc : "8 simple push buttons module", PartNb : 8, cat:["button"]},
+ {code : "0x02", name :  "VMB1RY",    power: [50,50],  desc : "1 relay (with physical button) module", PartNb : 1, cat:["relay"]},
+ {code : "0x03", name :  "VMB1BL",    power: [100,100], desc : "1 blind (with physical button) module", PartNb : 1, cat:["blind"]},
+ {code : "0x05", name :  "VMB6IN",    power: [150, 150], desc : "6 inputs module", PartNb : 6, cat:["button","input"]},
+ {code : "0x07", name :  "VMB1DM",    power: [35],  desc : "1 dimmer (with physical button) module", PartNb : 1, cat:["dimmer"]},
+ {code : "0x08", name :  "VMB4RY",    power: [50,250], desc : "4 relays (with physical buttons) module", PartNb : 4, cat:["relay"]},
+ {code : "0x09", name :  "VMB2BL",    power: [200], desc : "2 blind (with physical button) module", PartNb : 2, cat:["blind"]},
+ {code : "0x0B", name :  "VMB4PD",    power: [30],  desc : "8 (2x4) push buttons with display module", PartNb : 4, cat:["button", "display"]},
+ {code : "0x0C", name :  "VMB1TS",    power: [10],  desc : "1 temperature sensor module", PartNb : 1, cat: ["temp"]},
+ {code : "0x0D", name :  "VMB1TH",    power: [0], desc : "-never produced-", PartNb : 1, cat:["temp"]},
+ {code : "0x0E", name :  "VMB1TC",    power: [50],  desc : "1 temperature sensor module", PartNb : 1, cat:["temp", "controller"]},
+ {code : "0x0F", name :  "VMB1LED",   power: [20],  desc : "1 LED controller module", PartNb : 1, cat:["dimmer", "led"]},
+ {code : "0x10", name :  "VMB4RYLD",  power: [0], desc : "4 relays (common power source) module", PartNb : 4, cat:["relay"]},
+ {code : "0x11", name :  "VMB4RYNO",  power: [30,250], desc : "4 relays module", PartNb : 4, cat:["relay"]},
+ {code : "0x12", name :  "VMB4DC",    power: [100], desc : "4 channels controller (0..10v) module", PartNb : 4, cat:["dimmer", "controller"]},
+ {code : "0x14", name :  "VMBDME",    power: [30],  desc : "1 dimmer (electronic transformer load) module", PartNb : 1, cat: ["dimmer"]},
+ {code : "0x15", name :  "VMBDMI",    power: [30],  desc : "1 dimmer (inductive load) module", PartNb : 1, cat: ["dimmer"]},
+ {code : "0x16", name :  "VMB8PBU",   power: [35],  desc : "8 push buttons (different form factor) module", PartNb : 8, cat:["button"]},
+ {code : "0x17", name :  "VMB6BPN",   power: [0], desc : "6 push buttons (Niko compatible) module", PartNb : 6, cat:["button"]},
+ {code : "0x18", name :  "VMB2PBAN",  power: [20],  desc : "2 push buttons (Niko compatible) module", PartNb : 2, cat:["button"]},
+ {code : "0x18", name :  "VMB2PBN",   power: [20],  desc : "2 push buttons (Niko compatible) module", PartNb : 2, cat:["button"]},
+ {code : "0x1A", name :  "VMB4RF",    power: [0], desc : "4 channels wireless remote module", PartNb : 4, cat:["button","command"]},
+ {code : "0x1B", name :  "VMB1RYNO",  power: [100], desc : "1 relay module", PartNb : 1, cat:["relay"]},
+ {code : "0x1C", name :  "VMB1BLE",   power: [100], desc : "1 blind module", PartNb : 1, cat:["blind"]},
+ {code : "0x1D", name :  "VMB2BLE",   power: [200], desc : "2 blind module", PartNb : 2, cat:["blind"]},
+ {code : "0x1E", name :  "VMBGP1",    power: [20],  desc : "1 push glass button module", PartNb : 1, cat:["button"]},
+ {code : "0x1F", name :  "VMBGP2",    power: [20],  desc : "2 push glass button module", PartNb : 2, cat:["button"]},
+ {code : "0x20", name :  "VMBGP4",    power: [20],  desc : "4 push glass button module", PartNb : 4, cat:["button"]},
+ {code : "0x22", name :  "VMB7IN",    power: [30,150], desc : "7 inputs with minus up to 4 counters", PartNb : 7, cat:["energy","input"] },
+ {code : "0x25", name :  "VMBGPTC",   power: [20],  desc : "", PartNb : 1, cat:["unknown"]},
+ {code : "0x28", name :  "VMBGPOD",   power: [20], desc : "", PartNb : 1, cat:["unknown"]},
+ {code : "0x29", name :  "VMB1RYNOS", power: [15],  desc : "", PartNb : 1, cat:["unknown"]},
+ {code : "0x2A", name :  "VMBPIRM",   power: [10],  desc : "Infra Red sensor", PartNb : 1, cat:["input"]},
+ {code : "0x2B", name :  "VMBPIRC",   power: [20],  desc : "Infra Red sensor", PartNb : 1, cat:["input"]},
+ {code : "0x2C", name :  "VMBPIRO",   power: [30],  desc : "Infra Red sensor", PartNb : 1, cat:["input"]},
+ {code : "0x2D", name :  "VMBGP4PIR", power: [25],  desc : "4 push buttons + Infra Red sensor", PartNb : 4, cat:["input","command"]},
+ {code : "0x2E", name :  "VMB1BLS",   power: [100], desc : "", PartNb : 1, cat:["blind"]},
  {code : "0x2F", name :  "VMBDMIR",   power: [30], desc : "", PartNb : 1},
  {code : "0x30", name :  "VMBRFR8X",  power: [30], desc : "", PartNb : 8},
- {code : "0x31", name :  "VMBMETEO",  power: [35],  desc : "light, wind and rain sensor", PartNb : 8},  // mainly 8 alarms
+ {code : "0x31", name :  "VMBMETEO",  power: [35],  desc : "light, wind and rain sensor", PartNb : 8, cat:["meteo", "temp"]},  // mainly 8 alarms
  {code : "0x33", name :  "VMBVP01",   power: [300], desc : "Doorbird interface module", PartNb : 8},	// 2 Bells, 2 motions, 2 doors, 2 virtual
- {code : "0x44", name :  "VMB4PB",    power: [50],  desc : "", PartNb : 4},
- {code : "0x00", name :  "VMBRSUSB",  power: [15],  desc : "USB or serial Interface (for computer)", PartNb : 1}];
+ {code : "0x44", name :  "VMB4PB",    power: [50],  desc : "", PartNb : 4, cat:["button"]},
+ {code : "0x00", name :  "VMBRSUSB",  power: [15],  desc : "USB or serial Interface (for computer)", PartNb : 1, cat:["interface"]}];
 //#endregion
 
 //#region VMBfunction AS Velbus functions (code, name)
@@ -159,6 +159,18 @@ const getPartFromCode = (code) => {
 	}
 }
 
+/**
+ * send back category module from code module
+ * @param {Number} code 
+ * @returns name of module
+ */
+// WIP ------------------------------------------------------------------
+const getCatFromCode = (code) => {
+	let result = moduleTypes.find(item => Number(item.code) == code);
+	if (result !== undefined) return result.cat;
+	return ["unknown"];
+};
+
 // send back description module from code or name module
 const getDesc = (element) => {
 	// if string then search by name...
@@ -192,5 +204,6 @@ function getFunctionName(code) {
 export {
 	StartX, EndX, PrioHi, PrioLo,
 	moduleTypes, functionCode,
-	getCodeFromName, getDesc, getFunctionName, getNameFromCode, getPartFromCode
+	getCodeFromName, getDesc, getFunctionName, getNameFromCode, getPartFromCode,
+	getCatFromCode
 }

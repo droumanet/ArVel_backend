@@ -254,6 +254,8 @@ function checkModule(VMBmessage) {
 			for (let i=0; i<newModule.partNumber; i++) {
 				key=adrVelbus+"-"+(i+1)
 				subModTemp = new VMBsubmodule(adrVelbus, i+1, key, "", {})
+				subModTemp.cat = VMB.getCatFromCode(typVelbus)
+				/*
 				switch (typVelbus) {
 					case 0x01:
 					case 0x16:
@@ -294,6 +296,7 @@ function checkModule(VMBmessage) {
 					default:
 						break
 				}
+				*/		
 				subModTemp.type = typVelbus
 				setSubModuleList(key, subModTemp)
 				console.log("  |_ CREATE", key, "TYPE:", subModTemp.type, "FUNCTION:",subModTemp.cat)

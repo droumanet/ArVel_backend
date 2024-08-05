@@ -12,8 +12,9 @@ export function getModules(req, res) {
     console.log("*** API CTRL-Module : Filtered request", filter)
     let y = new Map()
     for (const [key, value] of x) {
-      if (x.get(key).cat == filter.cat) {
-        y.set(key, value)
+      if (x.get(key).cat.some(cat => cat == filter.cat)) {
+        // check for table 
+        y.set(key, value);
       }
     }
     mapObj = Object.fromEntries(y);
