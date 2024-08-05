@@ -124,7 +124,7 @@ let pad = function (num) { return ('00' + num).slice(-2) }
 let launchSync = () => { velbuslib.VMBsyncTime() }
 
 let everyDay5h = schedule.scheduleJob('* * 5 */1 * *', () => {
-    // Synchronize time each day at 5:00 (AM)
+    // Synchronize time each day at 5:00 (AM) because of summer/winter offset each year
     velbuslib.VMBSetTime(99, 99, 99)
     console.log("ARVEL CRON for Time synchronisation done...")
 

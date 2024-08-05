@@ -176,7 +176,6 @@ function checkName(element) {
 	let key = element[2] + "-" + Bin2Part(element[5])
 	let fctVelbus = element[4]
 	let myModule = VMBNameStatus.get(key)
-	// console.log("🔁 VMBNameStatus.get(" + key + ")=", myModule) // WIP
 
 	let max = 6		// for 0xF0 and 0xF1 functions
 	if (fctVelbus == 0xF2) max = 4
@@ -193,7 +192,6 @@ function checkName(element) {
 	let f = myModule.flag		// flag use a OR binary operation with 2⁰, 2¹ and 2²
 	n[idx] = ""					// remove previous value
 
-	//FIXME subModuleList without name
 	// Filling name char by char (n1 et n2 => max=6, n3 => max=4 as 15 char)
 	for (let t = 0; t < max; t++) {
 		if (element[6 + t] != 0xFF) {
@@ -205,7 +203,8 @@ function checkName(element) {
 	if ((f | flag) == 0b111) {
 		let m = subModuleList.get(key)
 		if (m) {
-			m.name = myModule.name
+			m.name = n[0]+n[1]+n[2]
+			myModule.name = m.name
 			console.log("🏷️ ARVEL - VELBUS submodule " + key + " is named " + subModuleList.get(key).name)
 		} else {
 			console.log("Erreur de lecture du module")
@@ -256,6 +255,8 @@ function checkModule(VMBmessage) {
 					case 0x18:
 						subModTemp.fct = "button"
 						break
+					case 0x05:
+						subModTemp.fct = "input"
 					case 0x0B:
 						subModTemp.fct = "button"
 						break
@@ -266,7 +267,7 @@ function checkModule(VMBmessage) {
 						break						
 					case 0x22:
 						if (i<4) { subModTemp.fct = "energy" }
-						else {subModTemp.fct = "button"}
+						else {subModTemp.fct = "input"}
 						break
 					case 0x0e:
 						subModTemp.fct = "temp"
@@ -340,7 +341,6 @@ function analyze2Texte(element) {
 		case 0xFF: { // Module Type Transmit
 			let moduleType = element[5]
 			console.log(adrVelbus, "Detected module type ", moduleType)
-			// WIP checkList(Address, )
 			break
 		}
 		default:
@@ -486,7 +486,6 @@ function surveyTempStatus() {
 			let maxT = TempMaxCalculation(msg.RAW)
 			let key = msg.RAW[2] + "-1"
 			let status = { "current": currentT, "min": minT, "max": maxT, "timestamp": Date.now() }
-			// WIP : ajout de renseignements manquants dans les sous-modules
 			// ajout pour gestion avec subModuleList
 			let subModTemp = subModuleList.get(key)
 			if (subModTemp) {
