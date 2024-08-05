@@ -255,48 +255,10 @@ function checkModule(VMBmessage) {
 				key=adrVelbus+"-"+(i+1)
 				subModTemp = new VMBsubmodule(adrVelbus, i+1, key, "", {})
 				subModTemp.cat = VMB.getCatFromCode(typVelbus)
-				/*
-				switch (typVelbus) {
-					case 0x01:
-					case 0x16:
-					case 0x17:
-					case 0x18:
-					case 0x44:
-						subModTemp.cat = "button"
-						break
-					case 0x05:
-						subModTemp.cat = "input"
-					case 0x0B:
-						subModTemp.cat = "button"
-						break
-					case 0x07:
-					case 0x14:
-					case 0x15:
-						subModTemp.cat = "dimmer"
-						break
-					case 0x03:
-					case 0x09:
-					case 0x1C:
-					case 0x1D:
-						subModTemp.cat = "blind"
-					case 0x02:
-					case 0x08:
-					case 0x10:
-					case 0x11:
-					case 0x1B:
-						subModTemp.cat = "relay"
-						break						
-					case 0x22:
-						if (i<4) { subModTemp.cat = "energy" }
-						else {subModTemp.cat = "input"}
-						break
-					case 0x0e:
-						subModTemp.cat = "temp"
-						break
-					default:
-						break
+				if (typVelbus = 0x22 && i>=4) {
+					subModTemp.cat = ["input"]
 				}
-				*/		
+		
 				subModTemp.type = typVelbus
 				setSubModuleList(key, subModTemp)
 				console.log("  |_ CREATE", key, "TYPE:", subModTemp.type, "FUNCTION:",subModTemp.cat)
