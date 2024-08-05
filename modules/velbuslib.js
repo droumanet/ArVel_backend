@@ -149,15 +149,20 @@ function Bin2Part(binValue, offset = 0) {
 }
 
 
-/** ----------------------------------------------------------------------------------------
+/** ------------------------------------------------------------------------------------------------------
  * Convert humar part number to binary element (5 => 0b10000)
  * @param {*} partValue 
  * @returns binary number of partValue
- * ---------------------------------------------------------------------------------------*/
+ * -----------------------------------------------------------------------------------------------------*/
 function Part2Bin(partValue) {
 	return 2 ** (partValue - 1)
 }
 
+/** ------------------------------------------------------------------------------------------------------
+ * This function return a name or **** is module doesn't exist
+ * @param {*} k key as 'address-part' (ex. 128-3)
+ * @returns string name
+ * -----------------------------------------------------------------------------------------------------*/
 function localModuleName(k) {
 	let myModule = subModuleList.get(k)
 	if (myModule) return myModule.name
@@ -168,10 +173,11 @@ function resume() {
 	return moduleList;
 }
 
-/**
+
+/** -------------------------------------------------------------------------------------------------------
  * This function try to reassemble each frame to create a full name for submodule
  * @param {*} element Frame received (should be F0, F1 or F2 for name)
- */
+ * ------------------------------------------------------------------------------------------------------*/
 function checkName(element) {
 	let key = element[2] + "-" + Bin2Part(element[5])
 	let fctVelbus = element[4]
@@ -253,31 +259,44 @@ function checkModule(VMBmessage) {
 					case 0x16:
 					case 0x17:
 					case 0x18:
-						subModTemp.fct = "button"
+					case 0x44:
+						subModTemp.cat = "button"
 						break
 					case 0x05:
-						subModTemp.fct = "input"
+						subModTemp.cat = "input"
 					case 0x0B:
-						subModTemp.fct = "button"
+						subModTemp.cat = "button"
 						break
+					case 0x07:
+					case 0x14:
+					case 0x15:
+						subModTemp.cat = "dimmer"
+						break
+					case 0x03:
+					case 0x09:
+					case 0x1C:
+					case 0x1D:
+						subModTemp.cat = "blind"
 					case 0x02:
 					case 0x08:
+					case 0x10:
+					case 0x11:
 					case 0x1B:
-						subModTemp.fct = "relay"
+						subModTemp.cat = "relay"
 						break						
 					case 0x22:
-						if (i<4) { subModTemp.fct = "energy" }
-						else {subModTemp.fct = "input"}
+						if (i<4) { subModTemp.cat = "energy" }
+						else {subModTemp.cat = "input"}
 						break
 					case 0x0e:
-						subModTemp.fct = "temp"
+						subModTemp.cat = "temp"
 						break
 					default:
 						break
 				}
 				subModTemp.type = typVelbus
 				setSubModuleList(key, subModTemp)
-				console.log("  |_ CREATE", key, "TYPE:", subModTemp.type, "FUNCTION:",subModTemp.fct)
+				console.log("  |_ CREATE", key, "TYPE:", subModTemp.type, "FUNCTION:",subModTemp.cat)
 				VMBWrite(FrameRequestName(adrVelbus, (i+1)))
 			}
 		}
@@ -494,8 +513,8 @@ function surveyTempStatus() {
 					// if it has no name, ask it
 					VMBWrite(FrameRequestName(msg.RAW[2], 1))
 				}
-				if (subModTemp.fct == "") {
-					subModTemp.fct = "temp"
+				if (subModTemp.cat == "") {
+					subModTemp.cat = "temp"
 				}
 			}
 		}

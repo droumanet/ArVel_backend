@@ -20,16 +20,9 @@ const CtrlRelay = require('../controllers/CtrlRelay')
 const CtrlSensor = require('../controllers/CtrlSensor')
 */
 
-let racine = (req, res) => {
-    res.render('accueil')
-}
-
 // routes list
-Router.get('/analyze', CtrlAnalyze.view)
-Router.get('/sensor', CtrlSensor.view)
-Router.get('/installation', CtrlInstall.installation)
 Router.get('/modules', CtrlModules.getModules)
-Router.get('/', racine)
-Router.get('*', racine)
+Router.get('/', (req, res) => { res.send({msg:"nothing here"})})
+Router.get('*', (req, res) => { res.send({msg:"nothing here"})})
 
 export {Router}

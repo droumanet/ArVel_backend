@@ -174,26 +174,26 @@ let everyMinut = schedule.scheduleJob('*/1 * * * *', () => {
             let texte=""
             subList.forEach((v, k) => {
                 
-                /* // planned to have multiples values in v.fct
-                fctArray = v.fct.map(x => x.toLowerCase())
+                /* // planned to have multiples values in v.cat
+                fctArray = v.cat.map(x => x.toLowerCase())
                 if (fctArray.find(e => e.toLowerCase() == "energy")) {
                     msg = velbuslib.VMBRequestEnergy(v.address, v.part)
                     console.log("CRON energy", msg)
                 }
 
-                if (v.fct.find(e => e.toLowerCase() == "temp")) {
+                if (v.cat.find(e => e.toLowerCase() == "temp")) {
                     msg=velbuslib.VMBRequestTemp(v.address, v.part)
                     console.log("CRON temperature", msg)
                 }
                 */
-                if (v.fct == "energy") {
+                if (v.cat == "energy") {
                     texte = v.address+"-"+v.part+" : "+v.name
                     velbuslib.VMBRequestEnergy(v.address, v.part)
                     .then((msg) => {console.log(texte, msg)})
                     ll = new Date(v.status.timestamp)
                     eventDate=ll.getFullYear()+"-"+pad(ll.getMonth()+1)+"-"+pad(ll.getDate())+" "+pad(ll.getHours())+":"+pad(ll.getMinutes())+":00"
                     //eventDate = (new Date(v.status.timestamp)-).toISOString().slice(0, 19).replace('T', ' ')
-                    console.log(eventDate, v.id, v.fct, v.status.power, v.status.index, 'w (', v.address,'-' ,v.part,')')
+                    console.log(eventDate, v.id, v.cat, v.status.power, v.status.index, 'w (', v.address,'-' ,v.part,')')
                     if (v.status.power && v.status.index) {
                         writeEnergy([v.address, v.part, eventDate, v.status.index, v.status.power])
                     }
