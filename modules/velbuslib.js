@@ -255,7 +255,7 @@ function checkModule(VMBmessage) {
 				key=adrVelbus+"-"+(i+1)
 				subModTemp = new VMBsubmodule(adrVelbus, i+1, key, "", {})
 				subModTemp.cat = VMB.getCatFromCode(typVelbus)
-				if (typVelbus = 0x22 && i>=4) {
+				if (typVelbus == 0x22 && i>=4) {
 					subModTemp.cat = ["input"]
 				}
 		
