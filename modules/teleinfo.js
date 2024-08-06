@@ -38,12 +38,21 @@ let compteurProd = {
     "MSG1": ""
 }
 
+/**
+ * This function return an array with two VMBsubModule (address with $300-1 and $300-2)
+ * @returns array of two VMBSubModule
+ */
 function resume() {
-    let statusConso = {"power":compteurConso.SINSTS*1, "indexHP":compteurConso.EASF01*1, "indexHC":compteurConso.EASF02*1, "powermax":compteurConso.SMAXSN, "timestamp":Date.now()}
-    let cptConso = new VMBsubmodule(300, 1, "300-1", "Energy", statusConso)
+    // let statusConso = {"power":compteurConso.SINSTS*1, "indexHP":compteurConso.EASF01*1, "indexHC":compteurConso.EASF02*1, "powermax":compteurConso.SMAXSN, "timestamp":Date.now()}
+    let statusConso = { "index": compteurConso.EASF01*1, "power": compteurConso.SINSTS*1, "indexHC":compteurConso.EASF02*1, "powerMax":compteurConso.SMAXSN, "timestamp": Date.now() }
+
+    let cptConso = new VMBsubmodule(300, 1, "300-1", ["energy", "electricity"], statusConso)
     cptConso.name = "TeleInfo Conso"
-    let statusProd = {"power":compteurProd.SINSTI*1, "indexProd":compteurProd.EAIT*1, "indexConso":compteurProd.EASF01*1, "powermax":compteurProd.SMAXIN, "timestamp":Date.now()}
-    let cptProd = new VMBsubmodule(300, 2, "300-2", "Energy", statusProd)
+
+    // let statusProd = {"power":compteurProd.SINSTI*1, "indexProd":compteurProd.EAIT*1, "indexConso":compteurProd.EASF01*1, "powerMax":compteurProd.SMAXIN, "timestamp":Date.now()}
+    let statusProd = {"index":compteurProd.EAIT*1, "power":compteurProd.SINSTI*1, "indexConso":compteurProd.EASF01*1, "powerMax":compteurProd.SMAXIN, "timestamp":Date.now()}
+
+    let cptProd = new VMBsubmodule(300, 2, "300-2", ["energy", "electricity"], statusProd)
     cptProd.name = "TeleInfo Prod"
     return [cptConso, cptProd]
 }
@@ -98,4 +107,4 @@ TeleInfo.on('error', (message, info) => {
 
 TeleInfo.bind(port)
 
-export {compteurConso, compteurProd, resume, decodeDate, decodePower}
+export {resume, decodeDate, decodePower}
